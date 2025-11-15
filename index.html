@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border: 1px solid #334155;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        .input-section {
+            display: flex;
+            margin-bottom: 25px;
+            gap: 12px;
+        }
+        
+        #taskInput {
+            flex: 1;
+            padding: 14px 18px;
+            background-color: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        #taskInput:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+        }
+        
+        #taskInput::placeholder {
+            color: #94a3b8;
+        }
+        
+        button {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #startBtn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        #startBtn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        #stopBtn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        
+        #stopBtn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+        }
+        
+        #exportBtn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        #exportBtn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+        }
+        
+        .task-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 18px;
+            border-bottom: 1px solid #334155;
+            transition: background-color 0.2s;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .task-item:hover {
+            background-color: #2d374850;
+        }
+        
+        .task-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .task-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 6px;
+            color: #f1f5f9;
+        }
+        
+        .task-time {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .task-details {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 14px;
+            font-size: 14px;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 8px 14px;
+            font-size: 14px;
+        }
+        
+        .active-task {
+            background-color: #1e3a8a30;
+            border-left: 4px solid #60a5fa;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1);
+        }
+        
+        .current-timer {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 16px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 8px;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        
+        .icon {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .timezone-info {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #1e293b;
+            border-radius: 6px;
+            border: 1px solid #334155;
+        }
+        
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .task-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Time Tracker</h1>
+            <p class="subtitle">Track time spent on tasks and projects throughout your day</p>
+        </header>
+        
+        <div class="timezone-info">
+            All times are recorded in UTC | Your timezone: <span id="userTimezone"></span>
+        </div>
+        
+        <div class="input-section">
+            <input type="text" id="taskInput" placeholder="Enter task name...">
+            <button id="startBtn">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Start
+            </button>
+            <button id="stopBtn" disabled>
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                </svg>
+                Stop
+            </button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalTasks">0</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalTime">00:00:00</div>
+                <div class="stat-label">Total Time</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="activeTasks">0</div>
+                <div class="stat-label">Active Now</div>
+            </div>
+        </div>
+        
+        <div id="currentTimer" class="current-timer" style="display: none;">
+            Current Task: <span id="currentTaskName" style="color: #60a5fa; font-weight: bold;"></span> - 
+            Time: <span id="currentTaskTime" style="color: #10b981; font-weight: bold;">00:00:00</span>
+        </div>
+        
+        <button id="exportBtn">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Export to CSV
+        </button>
+        
+        <ul class="task-list" id="taskList">
+            <li class="empty-state">No tasks added yet. Start tracking your time!</li>
+        </ul>
+    </div>
+
+    <script>
+        // Application state
+        const state = {
+            tasks: [],
+            currentTask: null,
+            timerInterval: null,
+            startTime: null
+        };
+
+        // DOM elements
+        const taskInput = document.getElementById('taskInput');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const taskList = document.getElementById('taskList');
+        const currentTimer = document.getElementById('currentTimer');
+        const currentTaskName = document.getElementById('currentTaskName');
+        const currentTaskTime = document.getElementById('currentTaskTime');
+        const totalTasks = document.getElementById('totalTasks');
+        const totalTime = document.getElementById('totalTime');
+        const activeTasks = document.getElementById('activeTasks');
+        const userTimezone = document.getElementById('userTimezone');
+
+        // Get user timezone
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        userTimezone.textContent = timezone;
+
+        // Format time function
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Format date for display
+        function formatDateForDisplay(date) {
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'UTC'
+            }) + ' UTC';
+        }
+
+        // Format date for CSV (ISO format)
+        function formatDateForCSV(date) {
+            return date.toISOString();
+        }
+
+        // Update current timer display
+        function updateCurrentTimer() {
+            if (state.currentTask) {
+                const elapsedSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+                currentTaskTime.textContent = formatTime(elapsedSeconds);
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            totalTasks.textContent = state.tasks.length;
+            
+            const totalSeconds = state.tasks.reduce((total, task) => total + task.totalTime, 0);
+            totalTime.textContent = formatTime(totalSeconds);
+            
+            activeTasks.textContent = state.currentTask ? 1 : 0;
+        }
+
+        // Start timer
+        function startTimer(taskName) {
+            // Stop current task if any
+            if (state.currentTask) {
+                stopTimer();
+            }
+            
+            // Find or create task
+            let task = state.tasks.find(t => t.name === taskName);
+            if (!task) {
+                task = {
+                    name: taskName,
+                    totalTime: 0,
+                    id: Date.now(),
+                    sessions: []
+                };
+                state.tasks.push(task);
+            }
+            
+            // Create new session
+            const startTime = new Date();
+            const session = {
+                startTime: startTime,
+                startTimeUTC: formatDateForCSV(startTime),
+                endTime: null,
+                endTimeUTC: null,
+                duration: 0
+            };
+            
+            task.sessions.push(session);
+            
+            // Set current task
+            state.currentTask = task;
+            state.currentSession = session;
+            state.startTime = Date.now();
+            
+            // Update UI
+            currentTaskName.textContent = taskName;
+            currentTimer.style.display = 'block';
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            taskInput.disabled = true;
+            
+            // Start interval for timer updates
+            state.timerInterval = setInterval(updateCurrentTimer, 1000);
+            
+            // Update task list and stats
+            renderTaskList();
+            updateStats();
+        }
+
+        // Stop timer
+        function stopTimer() {
+            if (state.currentTask && state.timerInterval && state.currentSession) {
+                // Calculate elapsed time
+                const elapsedSeconds = Math.floor((Date.now() - state.startTime) / 1000);
+                
+                // Update session
+                const endTime = new Date();
+                state.currentSession.endTime = endTime;
+                state.currentSession.endTimeUTC = formatDateForCSV(endTime);
+                state.currentSession.duration = elapsedSeconds;
+                
+                // Add time to task total
+                state.currentTask.totalTime += elapsedSeconds;
+                
+                // Clear interval
+                clearInterval(state.timerInterval);
+                state.timerInterval = null;
+                state.currentTask = null;
+                state.currentSession = null;
+                
+                // Update UI
+                currentTimer.style.display = 'none';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                taskInput.disabled = false;
+                
+                // Update task list and stats
+                renderTaskList();
+                updateStats();
+            }
+        }
+
+        // Reset task time
+        function resetTaskTime(taskId) {
+            const task = state.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.totalTime = 0;
+                task.sessions = [];
+                renderTaskList();
+                updateStats();
+            }
+        }
+
+        // Delete task
+        function deleteTask(taskId) {
+            state.tasks = state.tasks.filter(t => t.id !== taskId);
+            renderTaskList();
+            updateStats();
+        }
+
+        // Render task list
+        function renderTaskList() {
+            if (state.tasks.length === 0) {
+                taskList.innerHTML = '<li class="empty-state">No tasks added yet. Start tracking your time!</li>';
+                return;
+            }
+            
+            taskList.innerHTML = '';
+            
+            state.tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                if (state.currentTask && state.currentTask.id === task.id) {
+                    li.classList.add('active-task');
+                }
+                
+                // Get last session info
+                const lastSession = task.sessions.length > 0 ? task.sessions[task.sessions.length - 1] : null;
+                const lastSessionInfo = lastSession ? 
+                    `Last: ${formatDateForDisplay(new Date(lastSession.startTime))}` : 
+                    'No sessions yet';
+                
+                li.innerHTML = `
+                    <div class="task-info">
+                        <div class="task-name">${task.name}</div>
+                        <div class="task-time">Total time: ${formatTime(task.totalTime)}</div>
+                        <div class="task-details">${lastSessionInfo}</div>
+                        <div class="task-details">Sessions: ${task.sessions.length}</div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="reset-btn" data-id="${task.id}">Reset</button>
+                        <button class="delete-btn" data-id="${task.id}">Delete</button>
+                    </div>
+                `;
+                
+                taskList.appendChild(li);
+            });
+            
+            // Add event listeners for buttons
+            document.querySelectorAll('.reset-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const taskId = parseInt(e.target.getAttribute('data-id'));
+                    resetTaskTime(taskId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const taskId = parseInt(e.target.getAttribute('data-id'));
+                    deleteTask(taskId);
+                });
+            });
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            if (state.tasks.length === 0) {
+                alert('No data to export!');
+                return;
+            }
+            
+            let csvContent = "Task Name,Start Time (UTC),End Time (UTC),Duration (seconds),Duration (hh:mm:ss),Timezone\n";
+            
+            state.tasks.forEach(task => {
+                if (task.sessions.length > 0) {
+                    task.sessions.forEach(session => {
+                        const durationFormatted = formatTime(session.duration);
+                        csvContent += `"${task.name}","${session.startTimeUTC}","${session.endTimeUTC || 'In Progress'}",${session.duration},"${durationFormatted}","${timezone}"\n`;
+                    });
+                } else {
+                    // For tasks with no sessions (shouldn't happen, but just in case)
+                    csvContent += `"${task.name}","No sessions","No sessions",0,"00:00:00","${timezone}"\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            const dateStr = new Date().toISOString().slice(0, 10);
+            link.setAttribute('download', `time_tracker_${dateStr}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', () => {
+            const taskName = taskInput.value.trim();
+            if (taskName) {
+                startTimer(taskName);
+                taskInput.value = '';
+            } else {
+                alert('Please enter a task name!');
+            }
+        });
+
+        stopBtn.addEventListener('click', stopTimer);
+
+        exportBtn.addEventListener('click', exportToCSV);
+
+        // Handle Enter key in input field
+        taskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startBtn.click();
+            }
+        });
+
+        // Initialize application
+        renderTaskList();
+        updateStats();
+    </script>
+</body>
+</html>
